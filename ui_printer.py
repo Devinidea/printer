@@ -11,7 +11,9 @@ load_dotenv()
 printer_ip_env = os.environ.get("PRINTER_IP", "")
 printer_port_env = os.environ.get("PRINTER_PORT", "9100")  # 设置默认端口为 9100
 qr_x = os.environ.get("QR_CODE_X", "") 
-qr_y = os.environ.get("QR_CODE_Y", "") 
+qr_y = os.environ.get("QR_CODE_Y", "")
+width = os.environ.get("WIDTH", "310")
+height = os.environ.get("HEIGH", "230") 
 # 发送打印命令的函数
 def send_print_command(printer_ip, printer_port, case_no, num_copies):
     try:
@@ -19,8 +21,8 @@ def send_print_command(printer_ip, printer_port, case_no, num_copies):
         zpl = f"""
         ^XA
         ^PQ{num_copies},0,1,Y,N
-        ^PW300
-        ^LL200
+        ^PW{width}
+        ^LL{height}
         ^LH0,0
 
         ^FO60,30^A0N,45,45^FD{datetime.datetime.now().strftime('%b-%d')}^FS
