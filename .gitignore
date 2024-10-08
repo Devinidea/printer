@@ -4,7 +4,7 @@
 # 忽略所有编译的文件
 build/
 dist/
-
+myen/
 # 忽略虚拟环境目录
 venv/
 .env
