@@ -5,15 +5,18 @@ from tkinter import messagebox
 import os
 from dotenv import load_dotenv
 
-
 # 从环境变量中获取打印机的 IP 和端口
 load_dotenv()
 printer_ip_env = os.environ.get("PRINTER_IP", "")
-printer_port_env = os.environ.get("PRINTER_PORT", "9100")  # 设置默认端口为 9100
-qr_x = os.environ.get("QR_CODE_X", "") 
-qr_y = os.environ.get("QR_CODE_Y", "")
+printer_port_env = os.environ.get("PRINTER_PORT", "9100")  # 默认端口为 9100
+qr_x = os.environ.get("QR_CODE_X", "50") 
+qr_y = os.environ.get("QR_CODE_Y", "50")
 width = os.environ.get("WIDTH", "310")
-height = os.environ.get("HEIGH", "230") 
+height = os.environ.get("HEIGHT", "230")
+
+# 全局变量控制窗口置顶状态
+is_always_on_top = False
+
 # 发送打印命令的函数
 def send_print_command(printer_ip, printer_port, case_no, num_copies):
     try:
@@ -35,11 +38,14 @@ def send_print_command(printer_ip, printer_port, case_no, num_copies):
         
         # 发送打印命令
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.settimeout(5)  # 设置超时时间为5秒
+            s.settimeout(5)  # 超时5秒
             s.connect((printer_ip, int(printer_port)))
             s.sendall(zpl.encode('ascii'))
-
+            print("Print command sent successfully.")
+            messagebox.showinfo("Success", "Print command sent successfully.")
+            clear_inputs()  # 打印成功后清空输入框
     except Exception as e:
+        print(f"Error: {e}")
         messagebox.showerror("Error", f"Failed to connect to the printer: {e}")
 
 # 提交按钮的回调函数
@@ -73,6 +79,19 @@ def case_no_enter(event):
 def num_copies_enter(event):
     on_submit()  # 调用提交函数
 
+# 切换窗口置顶状态的函数
+def toggle_always_on_top():
+    global is_always_on_top
+    is_always_on_top = not is_always_on_top
+    root.attributes('-topmost', is_always_on_top)
+    always_on_top_button.config(text="Always on Top: ON" if is_always_on_top else "Always on Top: OFF")
+
+# 清空输入框的函数
+def clear_inputs():
+    case_no_entry.delete(0, tk.END)
+    num_copies_entry.delete(0, tk.END)
+    case_no_entry.focus()  # 聚焦到 Case NO 输入框
+
 # 创建 GUI 窗口
 root = tk.Tk()
 root.title("Zebra Printer Interface")
@@ -101,6 +120,10 @@ num_copies_entry.bind("<Return>", num_copies_enter)  # 绑定回车事件
 # 创建提交按钮
 submit_button = tk.Button(root, text="Print", command=on_submit)
 submit_button.grid(row=4, column=0, columnspan=2, pady=10)
+
+# 创建置顶窗口按钮
+always_on_top_button = tk.Button(root, text="Always on Top: OFF", command=toggle_always_on_top)
+always_on_top_button.grid(row=5, column=0, columnspan=2, pady=10)
 
 # 运行 GUI 主循环
 root.mainloop()
