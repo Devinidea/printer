@@ -42,7 +42,7 @@ def send_print_command(printer_ip, printer_port, case_no, num_copies):
             s.connect((printer_ip, int(printer_port)))
             s.sendall(zpl.encode('ascii'))
             print("Print command sent successfully.")
-            messagebox.showinfo("Success", "Print command sent successfully.")
+            # messagebox.showinfo("Success", "Print command sent successfully.")
             clear_inputs()  # 打印成功后清空输入框
     except Exception as e:
         print(f"Error: {e}")
