@@ -5,6 +5,7 @@ from tkinter import messagebox, font, ttk
 import os
 from dotenv import load_dotenv
 
+<<<<<<< HEAD
 # 从环境变量中加载配置
 load_dotenv()
 printer_ip = os.environ.get("PRINTER_IP", "")
@@ -19,6 +20,19 @@ qr_x = safe_get_int("QR_CODE_X", 100)
 qr_y = safe_get_int("QR_CODE_Y", 80)
 width = safe_get_int("WIDTH", 310)
 height = safe_get_int("HEIGHT", 230)
+=======
+# 从环境变量中获取打印机的 IP 和端口
+load_dotenv()
+printer_ip_env = os.environ.get("PRINTER_IP", "")
+printer_port_env = os.environ.get("PRINTER_PORT", "9100")  # 默认端口为 9100
+qr_x = os.environ.get("QR_CODE_X", "50") 
+qr_y = os.environ.get("QR_CODE_Y", "50")
+width = os.environ.get("WIDTH", "310")
+height = os.environ.get("HEIGHT", "230")
+
+# 全局变量控制窗口置顶状态
+is_always_on_top = False
+>>>>>>> 243f71ec9538635b018bf5e6f4b6ac53cd97f5ea
 
 # 发送打印命令的函数
 def send_print_command(case_no, num_copies):
@@ -38,10 +52,20 @@ def send_print_command(case_no, num_copies):
         
         # 发送打印命令
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+<<<<<<< HEAD
             s.connect((printer_ip, printer_port))
             s.sendall(zpl.encode('utf-8'))
             messagebox.showinfo("Success", "Print command sent successfully.")
+=======
+            s.settimeout(5)  # 超时5秒
+            s.connect((printer_ip, int(printer_port)))
+            s.sendall(zpl.encode('ascii'))
+            print("Print command sent successfully.")
+            # messagebox.showinfo("Success", "Print command sent successfully.")
+            clear_inputs()  # 打印成功后清空输入框
+>>>>>>> 243f71ec9538635b018bf5e6f4b6ac53cd97f5ea
     except Exception as e:
+        print(f"Error: {e}")
         messagebox.showerror("Error", f"Failed to connect to the printer: {e}")
 
 # 提交按钮的回调函数
@@ -97,6 +121,7 @@ def case_no_enter(event):
 def num_copies_enter(event):
     on_submit()
 
+<<<<<<< HEAD
 # 窗口置顶状态切换
 def toggle_topmost():
     is_top = root.attributes("-topmost")
@@ -108,6 +133,24 @@ def toggle_topmost():
         pin_button.config(text="📌", style="Pinned.TButton")
     else:
         pin_button.config(text="📍", style="Unpinned.TButton")
+=======
+# 切换窗口置顶状态的函数
+def toggle_always_on_top():
+    global is_always_on_top
+    is_always_on_top = not is_always_on_top
+    root.attributes('-topmost', is_always_on_top)
+    always_on_top_button.config(text="Always on Top: ON" if is_always_on_top else "Always on Top: OFF")
+
+# 清空输入框的函数
+def clear_inputs():
+    case_no_entry.delete(0, tk.END)
+    num_copies_entry.delete(0, tk.END)
+    case_no_entry.focus()  # 聚焦到 Case NO 输入框
+
+# 创建 GUI 窗口
+root = tk.Tk()
+root.title("Zebra Printer Interface")
+>>>>>>> 243f71ec9538635b018bf5e6f4b6ac53cd97f5ea
 
 # 创建精美现代的UI
 def create_ui():
@@ -225,7 +268,35 @@ def create_ui():
     
     return root
 
+<<<<<<< HEAD
 # 主程序入口
 if __name__ == "__main__":
     root = create_ui()
     root.mainloop()
+=======
+tk.Label(root, text="Printer Port:").grid(row=1, column=0, padx=10, pady=10)
+port_entry = tk.Entry(root)
+port_entry.grid(row=1, column=1, padx=10, pady=10)
+port_entry.insert(0, printer_port_env)  # 从环境变量读取端口并作为默认值
+
+tk.Label(root, text="Case NO:").grid(row=2, column=0, padx=10, pady=10)
+case_no_entry = tk.Entry(root)
+case_no_entry.grid(row=2, column=1, padx=10, pady=10)
+case_no_entry.bind("<Return>", case_no_enter)  # 绑定回车事件
+
+tk.Label(root, text="Number of Copies:").grid(row=3, column=0, padx=10, pady=10)
+num_copies_entry = tk.Entry(root)
+num_copies_entry.grid(row=3, column=1, padx=10, pady=10)
+num_copies_entry.bind("<Return>", num_copies_enter)  # 绑定回车事件
+
+# 创建提交按钮
+submit_button = tk.Button(root, text="Print", command=on_submit)
+submit_button.grid(row=4, column=0, columnspan=2, pady=10)
+
+# 创建置顶窗口按钮
+always_on_top_button = tk.Button(root, text="Always on Top: OFF", command=toggle_always_on_top)
+always_on_top_button.grid(row=5, column=0, columnspan=2, pady=10)
+
+# 运行 GUI 主循环
+root.mainloop()
+>>>>>>> 243f71ec9538635b018bf5e6f4b6ac53cd97f5ea
