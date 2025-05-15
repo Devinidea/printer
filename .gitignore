@@ -16,3 +16,6 @@ venv/
 .vscode/
 .idea/
 .env
+
+# PyInstaller spec文件
+*.spec
